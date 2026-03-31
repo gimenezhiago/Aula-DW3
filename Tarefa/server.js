@@ -3,7 +3,7 @@ const cors = require('@fastify/cors');
 
 fastify.register(cors, {
   origin: true,
-  methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'], //Tive que incluir isso com ia, pois não estava rodando, mesmo com o origin: true
   allowedHeaders: ['Content-Type']
 });
 
