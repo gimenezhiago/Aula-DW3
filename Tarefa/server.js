@@ -20,9 +20,7 @@ fastify.get('/tarefas', async (request, reply) => {
 
   if (busca?.trim()) {
     const termo = busca.toLowerCase();
-    resultado = resultado.filter(t =>
-      t.descricao.toLowerCase().includes(termo)
-    );
+    resultado = resultado.filter(t =>t.descricao.toLowerCase().includes(termo));
   }
 
   if (concluido !== undefined) {
