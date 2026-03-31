@@ -131,7 +131,7 @@ function renderTarefas(tarefas) {
                 </div>
             </div>
             
-            <button onclick="deleteTarefa(${tarefa.id}, this)" class="text-slate-600 hover:text-rose-400 p-2 transition-all opacity-0 group-hover:opacity-100 focus:opacity-100 bg-slate-900/50 rounded-lg hover:bg-rose-500/10 border border-transparent hover:border-rose-500/30" title="Excluir">
+            <button onclick="deleteTarefa(event, ${tarefa.id}, this)" class="text-slate-600 hover:text-rose-400 p-2 transition-all opacity-0 group-hover:opacity-100 focus:opacity-100 bg-slate-900/50 rounded-lg hover:bg-rose-500/10 border border-transparent hover:border-rose-500/30" title="Excluir">
                 <i class="ph ph-trash text-xl"></i>
             </button>
         `;
@@ -192,7 +192,8 @@ async function toggleTarefa(id) {
 }
 
 // DELETE /tarefas/:id
-async function deleteTarefa(id, btnElement) {
+async function deleteTarefa(event, id, btnElement) {
+    event.stopPropagation();
     if (!confirm('Excluir esta tarefa definitivamente?')) return;
 
     // Animação de saída manual
