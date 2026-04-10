@@ -1,4 +1,4 @@
-import { listarTarefas, criarTarefa, obterResumo, obterTarefa, atualizarTarefa, concluirTarefa, removerTarefa, listarPendentes } from '../controllers/tarefa.controller.js';
+import { listarTarefas, criarTarefa, obterResumo, obterTarefa, atualizarTarefa, concluirTarefa, removerTarefa, pendentes } from '../controllers/tarefa.controller.js';
 
 export default async function tarefaRoutes(server, options) {
 
@@ -20,7 +20,7 @@ export default async function tarefaRoutes(server, options) {
   });
 
   server.get("/tarefas/pendentes", async (request, reply) => {
-    return listarPendentes(request, reply);
+    return pendentes(request, reply);
   })
 
   server.get("/tarefas/:id", async (request, reply) => {

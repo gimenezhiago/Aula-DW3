@@ -98,7 +98,7 @@ export async function removerTarefa(request, reply) {
     return reply.status(204).send();
 }
 
-export async function listarPendentes(request, reply) {
+export async function pendentes(request, reply) {
     console.log("Controller: listarPendentes chamado");
     const { busca, concluido } = request.query;
     const resultado = await listarPendentes({ busca, concluido });
