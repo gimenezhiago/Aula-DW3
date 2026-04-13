@@ -1,7 +1,23 @@
-1. Controller
-2. Controller
-3. Controller
-4. Controller
-5. Controller
-6. Controller
-7.
+1.
+Camada: Controller
+Justificativa: Validação de dados de entrada (body da requisição).
+
+2.
+Camada: Model (com tratamento no Controller)
+Justificativa: Envolve acesso ao banco; Controller trata resposta (ex: 404).
+
+3.
+Camada: Controller
+Justificativa: Validação de dados da requisição (query params).
+
+4.
+Camada: Controller
+Justificativa: Conversão de tipos da requisição HTTP.
+
+5.
+Camada: Model
+Justificativa: Regra de negócio do sistema.
+
+6.
+Camada: Model
+Justificativa: Regra de negócio com consulta ao estado atual.
