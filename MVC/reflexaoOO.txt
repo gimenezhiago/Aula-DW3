@@ -1,0 +1,7 @@
+1. Classe é o molde; instância é o objeto criado. Exportamos `new TarefaModel()` para usar uma única instância compartilhada.
+
+2. Importar o model em cada método aumenta o acoplamento e dificulta testes (não dá pra mockar fácil).
+
+3. Não virou classe porque só define rotas; não precisa estado nem lógica complexa.
+
+4. O problema do `this` ocorre quando ele perde o contexto em callbacks. Solução: arrow functions ou `.bind(this)`.
