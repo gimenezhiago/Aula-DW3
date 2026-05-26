@@ -1,7 +1,7 @@
 // @file: src/server.js
 import Fastify from 'fastify'
-import tarefaRoutes from './features/tarefas/tarefa.routes.js'
-import { AppError } from './errors/AppError.js'
+import tarefaRoutes from './src/features/tarefas/tarefa.routes.js'
+import { AppError } from './src/errors/AppError.js'
 
 const server = Fastify({ logger: true })
 

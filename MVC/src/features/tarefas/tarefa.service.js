@@ -6,7 +6,23 @@ export class TarefaService {
     this.repository = repository
   }
 
-  // ... listarTarefas continua igual ...
+  async listarTarefas(filtros = {}) {
+    const tarefas = await this.repository.listarTodos()
+    
+    let resultado = tarefas
+
+    if (filtros.busca) {
+      resultado = resultado.filter(t =>
+        t.titulo.toLowerCase().includes(filtros.busca.toLowerCase())
+      )
+    }
+
+    if (filtros.status) {
+      resultado = resultado.filter(t => t.status === filtros.status)
+    }
+
+    return resultado
+  }
 
   async buscarPorId(id) {
     const tarefa = await this.repository.buscarPorId(id)
