@@ -1,7 +1,9 @@
 // @file: src/server.js
 import Fastify from 'fastify'
+import cors from '@fastify/cors'
 import tarefaRoutes from './src/features/tarefas/tarefa.routes.js'
 import { AppError } from './src/errors/AppError.js'
+import { client } from './src/database/client.js'
 
 const server = Fastify({ logger: true })
 
@@ -30,11 +32,46 @@ server.setErrorHandler((error, request, reply) => {
 })
 
 // ==========================================
+// CONFIGURAÇÃO DE CORS
+// ==========================================
+await server.register(cors, {
+  origin: true
+})
+
+// ==========================================
+// ROTAS DE LABORATÓRIO PARA TESTAR O POSTGRESQL
+// ==========================================
+server.get('/laboratorio/tarefas-db', async () => {
+  const result = await client.query(
+    'SELECT id, descricao, concluido, criada_em FROM tarefas ORDER BY id'
+  )
+  return result.rows
+})
+
+server.post('/laboratorio/tarefas-db', async (request, reply) => {
+  const { descricao } = request.body
+
+  if (!descricao || typeof descricao !== 'string') {
+    throw new AppError('descricao é obrigatória e deve ser uma string', 400)
+  }
+
+  const result = await client.query(
+    'INSERT INTO tarefas (descricao, concluido, criada_em) VALUES ($1, false, now()) RETURNING id, descricao, concluido, criada_em',
+    [descricao]
+  )
+
+  return reply.status(201).send(result.rows[0])
+})
+
+// ==========================================
 // REGISTRO DE ROTAS
 // ==========================================
 server.register(tarefaRoutes)
 
 const start = async () => {
-  await server.listen({ port: 3000 })
+  await client.connect()
+  console.log('Conectado ao PostgreSQL')
+
+  await server.listen({ port: 4000 })
 }
 start()

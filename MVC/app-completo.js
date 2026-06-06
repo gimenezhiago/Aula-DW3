@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:3000/tarefas';
+const API_URL = 'http://localhost:4000/tarefas';
 
 // DOM Elements
 const form = document.getElementById('form-tarefa');
@@ -84,7 +84,7 @@ async function loadTarefas() {
         const tarefas = await response.json();
         renderTarefas(tarefas);
     } catch (error) {
-        showToast('Erro de conexão. Verifique se o servidor Fastify está rodando na porta 3000 e com CORS ativado.', 'error');
+        showToast('Erro de conexão. Verifique se o servidor Fastify está rodando na porta 4000 e com CORS ativado.', 'error');
         container.innerHTML = `
             <div class="text-center text-rose-400 py-8 bg-rose-500/10 rounded-xl border border-rose-500/20">
                 <i class="ph ph-warning-octagon text-4xl mb-2"></i>
