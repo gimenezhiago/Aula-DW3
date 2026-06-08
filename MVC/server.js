@@ -39,31 +39,6 @@ await server.register(cors, {
 })
 
 // ==========================================
-// ROTAS DE LABORATÓRIO PARA TESTAR O POSTGRESQL
-// ==========================================
-server.get('/laboratorio/tarefas-db', async () => {
-  const result = await client.query(
-    'SELECT id, descricao, concluido, criada_em FROM tarefas ORDER BY id'
-  )
-  return result.rows
-})
-
-server.post('/laboratorio/tarefas-db', async (request, reply) => {
-  const { descricao } = request.body
-
-  if (!descricao || typeof descricao !== 'string') {
-    throw new AppError('descricao é obrigatória e deve ser uma string', 400)
-  }
-
-  const result = await client.query(
-    'INSERT INTO tarefas (descricao, concluido, criada_em) VALUES ($1, false, now()) RETURNING id, descricao, concluido, criada_em',
-    [descricao]
-  )
-
-  return reply.status(201).send(result.rows[0])
-})
-
-// ==========================================
 // REGISTRO DE ROTAS
 // ==========================================
 server.register(tarefaRoutes)
