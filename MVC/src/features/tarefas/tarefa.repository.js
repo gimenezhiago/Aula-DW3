@@ -1,6 +1,6 @@
 // @file: src/features/tarefas/tarefa.repository.js
 
-import { client } from '../../database/client.js'
+import pool from '../../database/pool.js'
 
 function rowToTarefa(row) {
   return {
@@ -17,13 +17,13 @@ export class TarefaRepository {
 
   async listarTodos() {
     console.log('Repository: listarTodos chamado (DB)')
-    const res = await client.query('SELECT id, descricao, concluido FROM tarefas ORDER BY id')
+    const res = await pool.query('SELECT id, descricao, concluido FROM tarefas ORDER BY id')
     return res.rows.map(rowToTarefa)
   }
 
   async buscarPorId(id) {
     console.log('Repository: buscarPorId chamado (DB)')
-    const res = await client.query('SELECT id, descricao, concluido FROM tarefas WHERE id = $1', [id])
+    const res = await pool.query('SELECT id, descricao, concluido FROM tarefas WHERE id = $1', [id])
     if (res.rowCount === 0) return null
     return rowToTarefa(res.rows[0])
   }
@@ -32,7 +32,7 @@ export class TarefaRepository {
     console.log('Repository: salvar chamado (DB)')
     const descricao = tarefa.titulo ?? tarefa.descricao
     const concluido = tarefa.concluido ?? (tarefa.status === 'concluida')
-    const res = await client.query(
+    const res = await pool.query(
       'INSERT INTO tarefas (descricao, concluido) VALUES ($1, $2) RETURNING id, descricao, concluido',
       [descricao, concluido]
     )
@@ -70,14 +70,14 @@ export class TarefaRepository {
 
     values.push(id)
     const sql = `UPDATE tarefas SET ${sets.join(', ')} WHERE id = $${values.length} RETURNING id, descricao, concluido`
-    const res = await client.query(sql, values)
+    const res = await pool.query(sql, values)
     if (res.rowCount === 0) return null
     return rowToTarefa(res.rows[0])
   }
 
   async remover(id) {
     console.log('Repository: remover chamado (DB)')
-    const res = await client.query('DELETE FROM tarefas WHERE id = $1', [id])
+    const res = await pool.query('DELETE FROM tarefas WHERE id = $1', [id])
     return res.rowCount > 0
   }
 }

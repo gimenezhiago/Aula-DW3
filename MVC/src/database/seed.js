@@ -1,4 +1,4 @@
-import { client } from './client.js'
+import pool from './pool.js'
 
 const tarefasParaInserir = [
   { descricao: 'Comprar leite', concluido: false },
@@ -8,11 +8,11 @@ const tarefasParaInserir = [
 
 async function main() {
   try {
-    await client.connect()
+    await pool.query('SELECT 1')
     console.log('Conectado ao PostgreSQL (seed)')
 
     // Garante que a tabela exista
-    await client.query(`
+    await pool.query(`
       CREATE TABLE IF NOT EXISTS tarefas (
         id serial PRIMARY KEY,
         descricao text NOT NULL,
@@ -22,7 +22,7 @@ async function main() {
     `)
 
     for (const t of tarefasParaInserir) {
-      const result = await client.query(
+      const result = await pool.query(
         'INSERT INTO tarefas (descricao, concluido) VALUES ($1, $2) RETURNING id, descricao, concluido, criada_em',
         [t.descricao, t.concluido]
       )
@@ -34,7 +34,7 @@ async function main() {
     console.error('Erro no seed:', err)
     process.exitCode = 1
   } finally {
-    await client.end()
+    await pool.end()
   }
 }
 
