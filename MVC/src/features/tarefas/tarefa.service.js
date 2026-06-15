@@ -38,6 +38,11 @@ export class TarefaService {
       throw new AppError('O título é obrigatório', 400)
     }
 
+    const projetoId = dados.projetoId ?? dados.projeto_id
+    if (projetoId === undefined || projetoId === null || `${projetoId}`.trim() === '') {
+      throw new AppError('O projetoId é obrigatório', 400)
+    }
+
     const tarefas = await this.repository.listarTodos()
     const tituloJaExiste = tarefas.some(t => t.titulo.toLowerCase() === titulo.toLowerCase().trim())
 
@@ -73,6 +78,14 @@ export class TarefaService {
     }
 
     return this.repository.remover(id)
+  }
+
+  async listarPorProjeto(projetoId) {
+    if (!projetoId) {
+      throw new AppError('O projetoId é obrigatório', 400)
+    }
+
+    return this.repository.buscarPorProjeto(projetoId)
   }
 
   async resumo() {

@@ -14,6 +14,7 @@ export default async function tarefaRoutes(server) {
 
 
   server.get('/tarefas', async (request, reply) => controller.listar(request, reply))
+  server.get('/tarefas/projeto/:projetoId', async (request, reply) => controller.listarPorProjeto(request, reply))
   server.post('/tarefas', async (request, reply) => controller.criar(request, reply))
   server.get('/tarefas/resumo', async (request, reply) => controller.resumo(request, reply))
   server.get('/tarefas/:id', async (request, reply) => controller.buscar(request, reply))

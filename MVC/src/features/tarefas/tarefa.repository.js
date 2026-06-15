@@ -8,7 +8,9 @@ function rowToTarefa(row) {
     descricao: row.descricao,
     titulo: row.descricao,
     concluido: row.concluido,
-    status: row.concluido ? 'concluida' : 'pendente'
+    status: row.concluido ? 'concluida' : 'pendente',
+    projetoId: row.projeto_id ?? row.projetoId ?? null,
+    projetoNome: row.projeto_nome ?? row.projetoNome ?? null
   }
 }
 
@@ -17,26 +19,68 @@ export class TarefaRepository {
 
   async listarTodos() {
     console.log('Repository: listarTodos chamado (DB)')
-    const res = await pool.query('SELECT id, descricao, concluido FROM tarefas ORDER BY id')
+    const res = await pool.query(`
+      SELECT
+        t.id,
+        t.descricao,
+        t.concluido,
+        t.criada_em,
+        t.projeto_id,
+        p.nome AS projeto_nome
+      FROM tarefas t
+      LEFT JOIN projetos p ON p.id = t.projeto_id
+      ORDER BY t.id
+    `)
     return res.rows.map(rowToTarefa)
   }
 
   async buscarPorId(id) {
     console.log('Repository: buscarPorId chamado (DB)')
-    const res = await pool.query('SELECT id, descricao, concluido FROM tarefas WHERE id = $1', [id])
+    const res = await pool.query(`
+      SELECT
+        t.id,
+        t.descricao,
+        t.concluido,
+        t.criada_em,
+        t.projeto_id,
+        p.nome AS projeto_nome
+      FROM tarefas t
+      LEFT JOIN projetos p ON p.id = t.projeto_id
+      WHERE t.id = $1
+    `, [id])
     if (res.rowCount === 0) return null
     return rowToTarefa(res.rows[0])
+  }
+
+  async buscarPorProjeto(projetoId) {
+    console.log('Repository: buscarPorProjeto chamado (DB)')
+    const res = await pool.query(`
+      SELECT
+        t.id,
+        t.descricao,
+        t.concluido,
+        t.criada_em,
+        t.projeto_id,
+        p.nome AS projeto_nome
+      FROM tarefas t
+      INNER JOIN projetos p ON p.id = t.projeto_id
+      WHERE p.id = $1
+      ORDER BY t.id
+    `, [projetoId])
+    return res.rows.map(rowToTarefa)
   }
 
   async salvar(tarefa) {
     console.log('Repository: salvar chamado (DB)')
     const descricao = tarefa.titulo ?? tarefa.descricao
     const concluido = tarefa.concluido ?? (tarefa.status === 'concluida')
+    const projetoId = tarefa.projetoId ?? tarefa.projeto_id ?? null
     const res = await pool.query(
-      'INSERT INTO tarefas (descricao, concluido) VALUES ($1, $2) RETURNING id, descricao, concluido',
-      [descricao, concluido]
+      'INSERT INTO tarefas (descricao, concluido, projeto_id) VALUES ($1, $2, $3) RETURNING id',
+      [descricao, concluido, projetoId]
     )
-    return rowToTarefa(res.rows[0])
+
+    return this.buscarPorId(res.rows[0].id)
   }
 
   async atualizar(id, dadosAtualizados) {

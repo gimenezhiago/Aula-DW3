@@ -7,12 +7,19 @@ export class TarefaController {
 
   normalizeTarefa(tarefa) {
     if (!tarefa) return tarefa
+
     return {
       ...tarefa,
       descricao: tarefa.descricao ?? tarefa.titulo,
       titulo: tarefa.titulo ?? tarefa.descricao,
       concluido: tarefa.concluido ?? (tarefa.status === 'concluida'),
-      status: tarefa.status ?? (tarefa.concluido ? 'concluida' : 'pendente')
+      status: tarefa.status ?? (tarefa.concluido ? 'concluida' : 'pendente'),
+      projetoId: tarefa.projetoId ?? tarefa.projeto_id ?? null,
+      projetoNome: tarefa.projetoNome ?? tarefa.projeto_nome ?? null,
+      projeto: tarefa.projeto ?? (tarefa.projetoId || tarefa.projeto_id ? {
+        id: tarefa.projetoId ?? tarefa.projeto_id,
+        nome: tarefa.projetoNome ?? tarefa.projeto_nome
+      } : null)
     }
   }
 
@@ -35,7 +42,8 @@ export class TarefaController {
   async criar(request, reply) {
     const payload = {
       titulo: request.body.titulo ?? request.body.descricao,
-      status: request.body.status ?? (request.body.concluido ? 'concluida' : 'pendente')
+      status: request.body.status ?? (request.body.concluido ? 'concluida' : 'pendente'),
+      projetoId: request.body.projetoId ?? request.body.projeto_id
     }
     const tarefa = this.normalizeTarefa(await this.service.criarTarefa(payload))
     return reply.status(201).send(tarefa)
@@ -67,6 +75,12 @@ export class TarefaController {
     const { id } = request.params
     await this.service.removerTarefa(id)
     return reply.status(204).send()
+  }
+
+  async listarPorProjeto(request, reply) {
+    const { projetoId } = request.params
+    const tarefas = await this.service.listarPorProjeto(projetoId)
+    return reply.send(tarefas.map(tarefa => this.normalizeTarefa(tarefa)))
   }
 
   async resumo(request, reply) {
