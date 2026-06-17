@@ -10,7 +10,8 @@ function rowToTarefa(row) {
     concluido: row.concluido,
     status: row.concluido ? 'concluida' : 'pendente',
     projetoId: row.projeto_id ?? row.projetoId ?? null,
-    projetoNome: row.projeto_nome ?? row.projetoNome ?? null
+    projetoNome: row.projeto_nome ?? row.projetoNome ?? null,
+    tags: Array.isArray(row.tags) ? row.tags : []
   }
 }
 
@@ -43,13 +44,23 @@ export class TarefaRepository {
         t.concluido,
         t.criada_em,
         t.projeto_id,
-        p.nome AS projeto_nome
+        p.nome AS projeto_nome,
+        tg.id AS tag_id,
+        tg.nome AS tag_nome
       FROM tarefas t
       LEFT JOIN projetos p ON p.id = t.projeto_id
+      LEFT JOIN tarefas_tags tt ON tt.tarefa_id = t.id
+      LEFT JOIN tags tg ON tg.id = tt.tag_id
       WHERE t.id = $1
     `, [id])
     if (res.rowCount === 0) return null
-    return rowToTarefa(res.rows[0])
+
+    const tarefa = rowToTarefa(res.rows[0])
+    tarefa.tags = res.rows
+      .filter(row => row.tag_id !== null)
+      .map(row => ({ id: row.tag_id, nome: row.tag_nome }))
+
+    return tarefa
   }
 
   async buscarPorProjeto(projetoId) {

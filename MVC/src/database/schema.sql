@@ -4,6 +4,15 @@ CREATE TABLE IF NOT EXISTS projetos (
   criado_em timestamptz NOT NULL DEFAULT now()
 );
 
+CREATE TABLE IF NOT EXISTS detalhes_projeto (
+  id serial PRIMARY KEY,
+  projeto_id integer NOT NULL UNIQUE,
+  descricao_longa text,
+  observacoes text,
+  prazo_final date,
+  FOREIGN KEY (projeto_id) REFERENCES projetos(id)
+);
+
 CREATE TABLE IF NOT EXISTS tarefas (
   id serial PRIMARY KEY,
   descricao text NOT NULL,
@@ -25,3 +34,16 @@ BEGIN
     REFERENCES projetos(id);
   END IF;
 END $$;
+
+CREATE TABLE IF NOT EXISTS tags (
+  id serial PRIMARY KEY,
+  nome text NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS tarefas_tags (
+  tarefa_id integer NOT NULL,
+  tag_id integer NOT NULL,
+  PRIMARY KEY (tarefa_id, tag_id),
+  FOREIGN KEY (tarefa_id) REFERENCES tarefas(id),
+  FOREIGN KEY (tag_id) REFERENCES tags(id)
+);
