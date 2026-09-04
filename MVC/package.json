@@ -14,7 +14,11 @@
   "description": "",
   "dependencies": {
     "@fastify/cors": "^11.2.0",
+    "drizzle-orm": "^0.45.2",
     "fastify": "^5.8.4",
     "pg": "^8.21.0"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.31.10"
   }
 }
