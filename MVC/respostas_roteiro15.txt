@@ -1,0 +1,48 @@
+Respostas resumidas - Roteiro 15
+
+1) Por que o ORM entra depois de SQL puro?
+O ORM entra depois porque primeiro é necessário entender como o banco relacional funciona, como as tabelas, chaves e joins são estruturados. SQL puro ensina a lógica real do banco e a linguagem que ele entende. O Drizzle é uma camada mais organizada para representar esse banco em código, mas não substitui o PostgreSQL nem o conhecimento de SQL.
+
+2) Mapeando a tabela projetos no schema
+import { pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core'
+
+export const projetos = pgTable('projetos', {
+  id: serial('id').primaryKey(),
+  nome: text('nome').notNull(),
+  criadoEm: timestamp('criado_em', { withTimezone: true }).notNull().defaultNow(),
+})
+
+Essa representação descreve a tabela real em JavaScript, sem criar ou alterar o banco por si só.
+
+3) Script para listar projetos com Drizzle
+import db from '../database/drizzle.js'
+import pool from '../database/pool.js'
+import { projetos } from '../database/schema.js'
+
+try {
+  const lista = await db.select().from(projetos).orderBy(projetos.id)
+  console.table(lista)
+} finally {
+  await pool.end()
+}
+
+Esse script lê os projetos ordenados pelo id usando o schema do Drizzle.
+
+4) Comparação entre SQL puro e Drizzle
+SQL puro:
+await pool.query(
+  'SELECT id, descricao, concluido FROM tarefas ORDER BY id'
+)
+
+Drizzle:
+const lista = await db.select().from(tarefas).orderBy(tarefas.id)
+
+Comparação:
+- SQL puro: mais direto e explícito, útil para aprender e debugar.
+- Drizzle: mais legível e organizado, com dados representados no código.
+- Controle: SQL oferece mais liberdade detalhada.
+- Volume de código: Drizzle costuma ser mais curto e mais próximo da modelagem da aplicação.
+- Banco: os dois acessam o mesmo PostgreSQL; o Drizzle apenas abstrai parte da escrita da consulta.
+
+Resumo final:
+O Drizzle não substitui o banco nem o SQL, ele complementa a aplicação com uma forma mais estruturada de representar tabelas e consultas em código.
